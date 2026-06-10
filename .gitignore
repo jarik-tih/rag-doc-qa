@@ -1,0 +1,11 @@
+# Project data
+data/raw/*
+data/processed/*
+!data/raw/.gitkeep
+
+.idea/
+*.iml
+
+.DS_Store
+.venv/
+/envs/
