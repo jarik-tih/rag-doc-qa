@@ -19,14 +19,13 @@ def recursive_chunking(documents):
     )
     return splitter.get_nodes_from_documents(documents)
 
-embed_model=HuggingFaceEmbedding(
-            model_name="BAAI/bge-base-en-v1.5"
-)
 def semantic_chunking(documents):
+    embed_model = HuggingFaceEmbedding(
+        model_name="BAAI/bge-base-en-v1.5"
+    )
     splitter = SemanticSplitterNodeParser(
         embed_model=embed_model,
         buffer_size=1,
         breakpoint_percentile_threshold=95
     )
     return splitter.get_nodes_from_documents(documents)
-
