@@ -2,7 +2,7 @@ import time
 
 from app.embeddings.generator import (
 generate_bge_embeddings,
-generate_openai_embeddings
+#generate_openai_embeddings
 )
 from app.embeddings.utils import (
 load_chunks,
@@ -22,8 +22,8 @@ print("BGE: ", bge_time)
 save_embeddings(bge_embeddings, "../data/processed/bge_embeddings.json")
 # OpenAI
 
-start = time.perf_counter()
-openai_embeddings = generate_openai_embeddings(texts)
-openai_time = time.perf_counter() - start
-print("OpenAI: ", openai_time)
-save_embeddings(openai_embeddings, "../data/processed/openai_embeddings.json")
+#start = time.perf_counter()
+#openai_embeddings = generate_openai_embeddings(texts)
+#openai_time = time.perf_counter() - start
+#print("OpenAI: ", openai_time)
+#save_embeddings(openai_embeddings, "../data/processed/openai_embeddings.json")

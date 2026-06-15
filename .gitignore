@@ -3,6 +3,8 @@ data/raw/*
 data/processed/*
 !data/raw/.gitkeep
 
+chroma_db/*
+
 .idea/
 *.iml
 
