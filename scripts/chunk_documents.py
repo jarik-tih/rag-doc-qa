@@ -31,9 +31,9 @@ sentences = sent_tokenize(documents[0].text)
 print(len(sentences))
 
 
-file_path = Path("../data/processed/semantic_nodes.json")
-if file_path.is_file()==False:
-    semantic_nodes = semantic_chunking(documents)
-    save_nodes(semantic_nodes, "../data/processed/semantic_nodes.json")
-    print_stats("Semantic Nodes", semantic_nodes)
+#file_path = Path("../data/processed/semantic_nodes.json")
+#if file_path.is_file()==False:
+   # semantic_nodes = semantic_chunking(documents)
+   # save_nodes(semantic_nodes, "../data/processed/semantic_nodes.json")
+   # print_stats("Semantic Nodes", semantic_nodes)
 

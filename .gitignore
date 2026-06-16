@@ -12,3 +12,7 @@ chroma_db/*
 .DS_Store
 .venv/
 /envs/
+
+__pycache__/
+*.py[cod]
+*$py.class

@@ -1,7 +1,4 @@
-from app.embeddings.models import (
-BGE_EMBED_MODEL,
-#OPENAI_EMBED_MODEL
-)
+from app.embeddings.models import BGE_EMBED_MODEL
 
 def generate_bge_embeddings(texts):
     return BGE_EMBED_MODEL.get_text_embedding_batch(texts)

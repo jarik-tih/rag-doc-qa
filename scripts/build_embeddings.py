@@ -1,9 +1,7 @@
 import time
 
-from app.embeddings.generator import (
-generate_bge_embeddings,
-#generate_openai_embeddings
-)
+from app.embeddings.generator import generate_bge_embeddings
+
 from app.embeddings.utils import (
 load_chunks,
 save_embeddings
