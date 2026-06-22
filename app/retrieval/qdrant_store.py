@@ -68,7 +68,7 @@ class QdrantStore:
             )
 
         self.client.upsert(
-            collection=self.collection_name,
+            collection_name=self.collection_name,
             points=points,
         )
 
