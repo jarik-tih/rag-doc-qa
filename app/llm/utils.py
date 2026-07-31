@@ -11,7 +11,7 @@ def answer_question(
         question: str,
         context: str
 ):
-    return f"""
+    prompt = f"""
 Context: {context}
 Question: {question}
 """
