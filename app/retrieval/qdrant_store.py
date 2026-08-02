@@ -16,7 +16,7 @@ class QdrantStore:
     ):
 
         self.client = QdrantClient(
-            host="local_host",
+            host="localhost",
             port= 6333,
         )
 
@@ -78,8 +78,10 @@ class QdrantStore:
             top_k=5,
     ):
 
-        return self.client.search(
+        response = self.client.query_points(
             collection_name=self.collection_name,
-            query_vector=query_embedding,
+            query=query_embedding,
             limit=top_k,
         )
+
+        return response.points

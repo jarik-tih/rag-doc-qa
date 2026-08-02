@@ -1,7 +1,7 @@
 from ollama import Client
 
 client = Client(
-    host="https://localhost:11434"
+    host="http://localhost:11434"
 )
 
 def generate_answer(
