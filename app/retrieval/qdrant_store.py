@@ -62,6 +62,7 @@ class QdrantStore:
                     vector=embedding,
                     payload={
                         "text": text,
+                        "document_id": metadata["document_id"],
                         "metadata": metadata,
                     },
                 )
