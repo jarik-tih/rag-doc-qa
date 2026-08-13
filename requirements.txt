@@ -11,3 +11,9 @@ requests
 urllib3<2
 charset-normalizer
 hf-xet
+mcp
+llama-index-core
+pymupdf
+
+ollama
+qdrant-client

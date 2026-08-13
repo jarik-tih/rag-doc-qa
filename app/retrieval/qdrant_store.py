@@ -63,6 +63,7 @@ class QdrantStore:
                     payload={
                         "text": text,
                         "document_id": metadata["document_id"],
+                        "chunk_index": metadata["chunk_index"],
                         "metadata": metadata,
                     },
                 )
@@ -86,3 +87,60 @@ class QdrantStore:
         )
 
         return response.points
+
+    def get_document_context(
+            self,
+            document_id: str,
+            chunk_index: int,
+            window: int = 2,
+    ):
+        start = max(
+            0,
+            chunk_index - window,
+        )
+
+        end = chunk_index + window
+
+        results = self.client.scroll(
+            collection_name=self.collection_name,
+            scroll_filter={
+                "must": [
+                    {
+                        "key": "document_id",
+                        "match": {
+                            "value": document_id,
+                        },
+                    },
+                ],
+            },
+            limit=1000,
+            with_payload=True,
+            with_vectors=False,
+        )[0]
+
+        chunks = []
+
+        for point in results:
+
+            payload = point.payload
+
+            index = payload["chunk_index"]
+
+            if start <= index <= end:
+                chunks.append(
+                    {
+                        "chunk_id": str(point.id),
+                        "chunk_index": index,
+                        "text": payload["text"],
+                        "metadata": payload.get(
+                            "metadata",
+                            {},
+                        ),
+                    }
+                )
+
+        chunks.sort(
+            key=lambda chunk: chunk["chunk_index"]
+        )
+
+        return chunks

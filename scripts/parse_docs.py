@@ -1,6 +1,26 @@
-from app.ingestion.loader import load_documents
+from pathlib import Path
+from app.ingestion.loader import load_pdf
 
-documents = load_documents("../data/raw")
+pdf_files = list(Path("../data/raw").glob("*.pdf"))
 
-print(len(documents),"loaded documents")
-print(documents[0].metadata)
+for pdf_path in pdf_files:
+    print(
+        f"Processing: {pdf_path.name}"
+    )
+
+    documents = load_pdf(
+        str(pdf_path)
+    )
+
+    print(
+        f"Extracted {len(documents)} pages"
+    )
+
+    for document in documents:
+        print(
+            document.metadata,
+        )
+
+        print(
+            document.text[:300]
+        )

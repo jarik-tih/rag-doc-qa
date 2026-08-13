@@ -1,29 +1,52 @@
 from app.retrieval.qdrant_store import QdrantStore
-from app.embeddings.models import BGE_EMBED_MODEL
+from app.embeddings.generator import generate_bge_embeddings
 
-
-store = QdrantStore(
+qdrant_store = QdrantStore(
     collection_name="recursive_bge",
 )
 
 
-def search_documents(
+def search(
     query: str,
     top_k: int = 5,
-):
-    query_embedding = BGE_EMBED_MODEL.get_text_embedding(query)
+) -> list[dict]:
+    """
+    Search the document collection using
+    semantic vector search.
 
-    results = store.search(
+    Args:
+        query: Natural language question.
+        top_k: Number of relevant chunks to return.
+
+    Returns:
+        A list of relevant document chunks.
+    """
+
+    query_embedding = generate_bge_embeddings(query)
+
+    results = qdrant_store.search(
         query_embedding=query_embedding,
         top_k=top_k,
     )
 
-    return [
-        {
-            "id": str(result.id),
-            "score": result.score,
-            "text": result.payload["text"],
-            "metadata": result.payload["metadata"],
-        }
-        for result in results
-    ]
+    response = []
+
+    for result in results:
+
+        payload = result.payload
+
+        response.append(
+            {
+                "chunk_id": str(result.id),
+                "score": result.score,
+                "document_id": payload["document_id"],
+                "chunk_index": payload["chunk_index"],
+                "text": payload["text"],
+                "metadata": payload.get(
+                    "metadata",
+                    {},
+                ),
+            }
+        )
+
+    return response
