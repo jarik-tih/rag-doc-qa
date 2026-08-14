@@ -2,12 +2,15 @@ from app.llm.utils import (
     build_context,
     answer_question,
 )
+
 from app.retrieval.qdrant_store import QdrantStore
 from app.embeddings.models import BGE_EMBED_MODEL
+
 
 store = QdrantStore(
     collection_name="recursive_bge",
 )
+
 
 question = input("Question: ")
 
@@ -17,13 +20,45 @@ query_embedding = (
 
 results = store.search(
     query_embedding=query_embedding,
+    top_k=5,
 )
 
-context_chunks = [
-    hit.payload["text"]
-    for hit in results
-]
+context_chunks = []
+seen_chunks = set()
 
-answer = answer_question(question, build_context(context_chunks))
+for hit in results:
 
-print(f"\nAnswer:{answer}")
+    payload = hit.payload
+
+    document_id = payload["document_id"]
+    chunk_index = payload["chunk_index"]
+
+    expanded_chunks = store.get_document_context(
+        document_id=document_id,
+        chunk_index=chunk_index,
+        window=2,
+    )
+
+    for chunk in expanded_chunks:
+
+        chunk_id = chunk["chunk_id"]
+
+        if chunk_id not in seen_chunks:
+
+            seen_chunks.add(chunk_id)
+
+            context_chunks.append(
+                chunk["text"]
+            )
+
+context = build_context(
+    context_chunks
+)
+
+answer = answer_question(
+    question,
+    context,
+)
+
+
+print(f"\nAnswer: {answer}")

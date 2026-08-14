@@ -1,10 +1,10 @@
 from app.retrieval.qdrant_store import QdrantStore
-from app.embeddings.generator import generate_bge_embeddings
+from app.embeddings.models import BGE_EMBED_MODEL
+
 
 qdrant_store = QdrantStore(
     collection_name="recursive_bge",
 )
-
 
 def search(
     query: str,
@@ -15,14 +15,14 @@ def search(
     semantic vector search.
 
     Args:
-        query: Natural language question.
+        query: Natural language question don't do embedding of that query.
         top_k: Number of relevant chunks to return.
 
     Returns:
         A list of relevant document chunks.
     """
 
-    query_embedding = generate_bge_embeddings(query)
+    query_embedding = BGE_EMBED_MODEL.get_text_embedding(query)
 
     results = qdrant_store.search(
         query_embedding=query_embedding,
