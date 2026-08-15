@@ -1,7 +1,6 @@
 from app.retrieval.qdrant_store import QdrantStore
 from app.embeddings.models import BGE_EMBED_MODEL
 
-
 qdrant_store = QdrantStore(
     collection_name="recursive_bge",
 )

@@ -1,4 +1,3 @@
-
 from app.retrieval.qdrant_store import QdrantStore
 
 qdrant_store = QdrantStore(

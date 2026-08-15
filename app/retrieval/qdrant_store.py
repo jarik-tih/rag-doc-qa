@@ -94,12 +94,6 @@ class QdrantStore:
             chunk_index: int,
             window: int = 2,
     ):
-        start = max(
-            0,
-            chunk_index - window,
-        )
-
-        end = chunk_index + window
 
         results = self.client.scroll(
             collection_name=self.collection_name,
@@ -113,10 +107,16 @@ class QdrantStore:
                     },
                 ],
             },
-            limit=1000,
+            limit=100,
             with_payload=True,
             with_vectors=False,
         )[0]
+
+        start = max(
+            0,
+            chunk_index - window,
+            )
+        end = chunk_index + window
 
         chunks = []
 
