@@ -1,5 +1,5 @@
 from app.retrieval.qdrant_store import QdrantStore
-from app.embeddings.models import BGE_EMBED_MODEL
+from app.embeddings.models import get_bge_embed_model
 
 qdrant_store = QdrantStore(
     collection_name="recursive_bge",
@@ -21,7 +21,8 @@ def search(
         A list of relevant document chunks.
     """
 
-    query_embedding = BGE_EMBED_MODEL.get_text_embedding(query)
+    model = get_bge_embed_model()
+    query_embedding = model.get_text_embedding(query)
 
     results = qdrant_store.search(
         query_embedding=query_embedding,

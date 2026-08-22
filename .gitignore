@@ -17,4 +17,7 @@ __pycache__/
 *.py[cod]
 *$py.class
 
-qdrant_storage
+qdrant_storage/*
+app/core/*
+app/ingestion/*
+app/llm/*

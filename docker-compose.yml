@@ -1,29 +1,10 @@
 services:
-
   qdrant:
     image: qdrant/qdrant:latest
     container_name: rag-qdrant
-
     ports:
       - "6333:6333"
       - "6334:6334"
-
     volumes:
-      - qdrant_storage:/qdrant/storage
-
-  mcp-server:
-    build:
-      context: .
-      dockerfile: Dockerfile
-
-    container_name: rag-mcp-server
-
-    depends_on:
-      - qdrant
-
-    environment:
-      QDRANT_HOST: qdrant
-      QDRANT_PORT: 6333
-
-volumes:
-  qdrant_storage:
+      - S:/Practise/qdrant_storage:/qdrant/storage
+    restart: always
