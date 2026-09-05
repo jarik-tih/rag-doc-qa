@@ -21,3 +21,6 @@ qdrant_storage/*
 app/core/*
 app/ingestion/*
 app/llm/*
+
+evaluation/dataset.json
+evaluation/results

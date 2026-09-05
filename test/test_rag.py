@@ -4,18 +4,18 @@ from app.llm.utils import (
 )
 
 from app.retrieval.qdrant_store import QdrantStore
-from app.embeddings.models import BGE_EMBED_MODEL
+from app.embeddings.models import get_bge_embed_model
 
 
 store = QdrantStore(
     collection_name="recursive_bge",
 )
 
-
+model = get_bge_embed_model()
 question = input("Question: ")
 
 query_embedding = (
-    BGE_EMBED_MODEL.get_text_embedding(question)
+    model.get_text_embedding(question)
 )
 
 results = store.search(
