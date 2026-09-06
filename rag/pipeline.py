@@ -4,7 +4,10 @@ from app.llm.utils import build_context, answer_question
 
 
 store = QdrantStore(
-    collection_name="recursive_bge"
+    collection_names=[
+        "recursive_bge",
+        "semantic_cache",
+    ]
 )
 
 
@@ -13,7 +16,25 @@ def run_rag(question: str):
 
     query_embedding = model.get_text_embedding(question)
 
+    cached_results = store.search(
+        collection_name="semantic_cache",
+        query_embedding=query_embedding,
+        top_k=1,
+    )
+
+    if cached_results:
+
+        hit = cached_results[0]
+
+        return {
+            "question": question,
+            "contexts": hit.payload["contexts"],
+            "answer": hit.payload["answer"],
+            "cached": True,
+        }
+
     results = store.search(
+        collection_name="recursive_bge",
         query_embedding=query_embedding,
         top_k=5,
     )
@@ -47,8 +68,18 @@ def run_rag(question: str):
         context,
     )
 
-    return {
+    result = {
         "question": question,
         "contexts": contexts,
         "answer": answer,
+        "cached": False,
     }
+
+    store.add_point(
+        collection_name="semantic_cache",
+        question=question,
+        embedding=query_embedding,
+        answer=answer,
+        contexts=contexts,
+    )
+    return result

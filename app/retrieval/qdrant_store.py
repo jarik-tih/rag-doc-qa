@@ -1,5 +1,6 @@
 import os
 from qdrant_client import QdrantClient
+from uuid import uuid4
 
 from qdrant_client.models import (
     Distance,
@@ -12,7 +13,7 @@ class QdrantStore:
 
     def __init__(
             self,
-            collection_name:str,
+            collection_names:list[str],
             vector_size:int=768,
     ):
 
@@ -24,34 +25,45 @@ class QdrantStore:
             port=qdrant_port,
         )
 
-        self.collection_name = collection_name
+        self.collection_names = collection_names
         collections = self.client.get_collections()
 
-        existing = [
+        existing = {
             c.name
             for c in collections.collections
-        ]
+        }
 
-        if collection_name not in existing:
-            self.client.create_collection(
-                collection_name=collection_name,
-                vectors_config=VectorParams(
-                    size=vector_size,
-                    distance=Distance.COSINE,
-                ),
-                hnsw_config=HnswConfigDiff(
-                    m=16,
-                    ef_construct=100,
-                ),
+        for collection_name in collection_names:
+            if collection_names not in existing:
+                self.client.create_collection(
+                    collection_name=collection_name,
+                    vectors_config=VectorParams(
+                        size=vector_size,
+                        distance=Distance.COSINE,
+                    ),
+                    hnsw_config=HnswConfigDiff(
+                        m=16,
+                        ef_construct=100,
+                    ),
+            )
+
+    def _validate_collection(self, collection_name: str):
+
+        if collection_name not in self.collection_names:
+            raise ValueError(
+                f"Unknown collection: {collection_name}"
             )
 
     def add_documents(
             self,
+            collection_name: str,
             ids,
             texts,
             embeddings,
             metadatas,
     ):
+        self._validate_collection(collection_name)
+
         points = []
         for idx, text, embedding, metadata in zip(
             ids,
@@ -74,18 +86,43 @@ class QdrantStore:
             )
 
         self.client.upsert(
-            collection_name=self.collection_name,
+            collection_name=collection_name,
             points=points,
+        )
+
+    def add_point(
+        self,
+        collection_name: str,
+        question: str,
+        embedding: list[float],
+        answer: str,
+        contexts: list[str],
+    ):
+        point = PointStruct(
+            id=str(uuid4()),
+            vector=embedding,
+            payload={
+                "question": question,
+                "answer": answer,
+                "contexts": contexts,
+            },
+        )
+
+        self.client.upsert(
+            collection_name=collection_name,
+            points=[point],
         )
 
     def search(
             self,
+            collection_name: str,
             query_embedding,
             top_k=5,
     ):
+        self._validate_collection(collection_name)
 
         response = self.client.query_points(
-            collection_name=self.collection_name,
+            collection_name=collection_name,
             query=query_embedding,
             limit=top_k,
         )
@@ -94,13 +131,15 @@ class QdrantStore:
 
     def get_document_context(
             self,
+            collection_name: str,
             document_id: str,
             chunk_index: int,
             window: int = 2,
     ):
+        self._validate_collection(collection_name)
 
         results = self.client.scroll(
-            collection_name=self.collection_name,
+            collection_name=collection_name,
             scroll_filter={
                 "must": [
                     {

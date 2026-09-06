@@ -8,7 +8,7 @@ from app.embeddings.models import get_bge_embed_model
 
 
 store = QdrantStore(
-    collection_name="recursive_bge",
+    collection_names=["recursive_bge",]
 )
 
 model = get_bge_embed_model()
